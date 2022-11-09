@@ -1,6 +1,12 @@
-﻿using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿/*
+* This code was auto-converted from a java project.
+*/
 
-namespace WarLight.Shared.AI.Wunderwaffe.Move
+
+
+using WarLight.AI.Wunderwaffe.Bot;
+
+namespace WarLight.AI.Wunderwaffe.Move
 {
     /// <summary>This Move is used in the first part of each round.</summary>
     /// <remarks>

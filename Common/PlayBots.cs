@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,87 +7,30 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public static class PlayBots
     {
         public static void Go(string[] args)
         {
-            var bots = args.Where(o => o.Contains('=') == false).ToList();
+            AILog.SuppressLog = true;
 
-            Func<string, string, string> getArg = (argName, def) => args.None(o => o.ToLower().StartsWith(argName.ToLower() + "=")) ? def : args.Single(o => o.ToLower().StartsWith(argName.ToLower() + "=")).ToLower().RemoveFromStartOfString(argName + "=");
-
-            //Pass Parallel=true as an argument to make each individual game execute all of the bots in paralell (may cause issues with team games and cards)
-            bool parallel = bool.Parse(getArg("parallel", "false"));
-
-            //Pass NumThreads=## as an argument to use multiple threads
-            int numThreads = int.Parse(getArg("threads", "1"));
-
-            if (numThreads == 1)
-            {
-                while (true)
-                    PlayGame(bots, parallel);
-            }
-            else
-            {
-                AILog.DoLog = l => false;
-
-                var threads = Enumerable.Range(0, numThreads).Select(o => new Thread(() =>
-                {
-                    Thread.Sleep(100 * o); //stagger them
-                    try
-                    {
-                        while (true)
-                            PlayGame(bots, parallel);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Thread failed: " + ex);
-                    }
-
-                })).ToList();
-
-                threads.ForEach(o => o.Start());
-                Thread.Sleep(int.MaxValue);
-            }
+            while(true)
+                PlayGame(args);
         }
 
-        static ConcurrentDictionary<string, int> _totals = new ConcurrentDictionary<string, int>();
-
-        private static void PlayGame(List<string> bots, bool parallel)
+        private static void PlayGame(string[] args)
         {
-            AILog.Log("PlayBots", "Creating game...");
-            var templateID = 1;
-            var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Count).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", templateID, gameSettings =>
+            var bots = args;
+
+            AILog.Log("Creating game...");
+            var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, bots.Length).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayBots", null, gameSettings =>
             {
                 gameSettings["MaxCardsHold"] = 999;
-                gameSettings["ReinforcementCard"] = "none";
-                //gameSettings["Fog"] = GameFogLevel.NoFog.ToString();
-                //gameSettings["Fog"] = GameFogLevel.ModerateFog.ToString();
-                //gameSettings["Fog"] = GameFogLevel.ExtremeFog.ToString();
-                //gameSettings["OneArmyStandsGuard"] = false;
-                //ZeroAllBonuses(gameSettings);
-                //gameSettings["Map"] = 16114; //Rise of Rome -- use to test how bots respond to super bonuses
-                //gameSettings["Map"] = 24591; //big USA, 3066 territories
-                //gameSettings["MultiAttack"] = true; 
-                //gameSettings["AllowPercentageAttacks"] = false;
-                //gameSettings["AllowAttackOnly"] = false;
-                //gameSettings["AllowTransferOnly"] = false;
-
-                //var wastelands = new JObject();
-                //wastelands["NumberOfWastelands"] = 0;
-                //wastelands["WastelandSize"] = 10;
-                //gameSettings["Wastelands"] = wastelands;
-                //gameSettings["BombCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 4), new JProperty("Weight", 1));
-                //gameSettings["SanctionsCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 4), new JProperty("Weight", 1), new JProperty("Duration", 1), new JProperty("Percentage", 0.5));
-                //gameSettings["BlockadeCard"] = new JObject(new JProperty("InitialPieces", 50), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 1), new JProperty("Weight", 1), new JProperty("MultiplyAmount", 10));
-                //gameSettings["DiplomacyCard"] = new JObject(new JProperty("InitialPieces", 0), new JProperty("MinimumPiecesPerTurn", 1), new JProperty("NumPieces", 1), new JProperty("Weight", 1), new JProperty("Duration", 1));
-                //gameSettings["NumberOfCardsToReceiveEachTurn"] = 4;
             });
 
-            AILog.Log("PlayBots", "Created game " + gameID);
+            AILog.Log("Created game " + gameID);
 
             var settings = BotGameAPI.GetGameSettings(gameID);
             var game = BotGameAPI.GetGameInfo(gameID, null);
@@ -103,11 +45,7 @@ namespace WarLight.Shared.AI
                     game = BotGameAPI.GetGameInfo(gameID, null);
                     if (game.State == GameState.Finished)
                     {
-                        var winnerStr = game.Players.Values.Where(o => o.State == GamePlayerState.Won).Select(o => botsDict[o.ID]).JoinStrings(",");
-                        _totals.AddOrUpdate(winnerStr, 1, (_, i) => i + 1);
-                        Console.WriteLine("Game " + gameID + " finished.  Winner=" + winnerStr + ", totals: " + _totals.OrderByDescending(o => o.Value).Select(o => o.Key + "=" + o.Value).JoinStrings(", "));
-
-                        
+                        Console.WriteLine("Game " + gameID + " finished.  Winner=" + game.Players.Values.Where(o => o.State == GamePlayerState.Won).Select(o => botsDict[o.ID]).JoinStrings(","));
                         break;
                     }
 
@@ -120,7 +58,7 @@ namespace WarLight.Shared.AI
                         EntryPoint.PlayGame(botsDict[player.ID], pg, player.ID, settings.Item1, settings.Item2, picks => BotGameAPI.SendPicks(pg.ID, player.ID, picks), orders => BotGameAPI.SendOrders(pg.ID, player.ID, orders, pg.NumberOfTurns + 1));
                     };
 
-                    if (parallel) //note: Parallel won't work when teammates, cards, and limited holding cards are involved.
+                    if (args.Any(o => o.ToLower() == "parallel")) //note: Parallel won't work when teammates, cards, and limited holding cards are involved.
                         players.AsParallel().ForAll(play);
                     else
                         players.ForEach(play);
@@ -151,17 +89,6 @@ namespace WarLight.Shared.AI
                 Directory.CreateDirectory(dir);
             File.WriteAllText(Path.Combine(dir, gameID + ".txt"), export);
 
-        }
-
-        /// <summary>
-        /// Sets all bonuses to 0.  Used to verify that bots can still expand even when there are no bonuses
-        /// </summary>
-        /// <param name="gameSettings"></param>
-        private static void ZeroAllBonuses(JObject gameSettings)
-        {
-            gameSettings["OverriddenBonuses"] = new JArray(Enumerable.Range(1, 23).Select(o => new JObject(new JProperty("bonusID", o), new JProperty("value", 0)))); //Assumes MME map
-            gameSettings["DistributionMode"] = 2; //warlords dist.  We can't use random warlords since that gives one territory per bonus, and there are no bonuses
-            gameSettings["BonusArmyPer"] = 1; //extra armies, otherwise games tend to stalemate
         }
     }
 }

@@ -1,8 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/*
+* This code was auto-converted from a java project.
+*/
 
-namespace WarLight.Shared.AI.Wunderwaffe.Bot
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Heuristics;
+
+using System;
+
+namespace WarLight.AI.Wunderwaffe.Bot
 {
     public class BotMap
     {
@@ -17,7 +25,36 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             this.Bonuses = new Dictionary<BonusIDType, BotBonus>();
             this.BotState = state;
         }
-        
+
+        public BotMap(List<BotTerritory> terrs, List<BotBonus> bonuses)
+        {
+            this.Territories = terrs.ToDictionary(o => o.ID, o => o);
+            this.Bonuses = bonuses.ToDictionary(o => o.ID, o => o);
+        }
+
+        //private Dictionary<PlayerIDType, PlayerExpansionValueHeuristic> _opponentExpansionValue = new Dictionary<PlayerIDType, PlayerExpansionValueHeuristic>();
+
+        //public void SetOpponentExpansionValue(PlayerIDType opponentID)
+        //{
+        //    _opponentExpansionValue[opponentID] = new PlayerExpansionValueHeuristic(BotState, this, opponentID);
+        //}
+
+        //public PlayerExpansionValueHeuristic OpponentExpansionValue(PlayerIDType opponentID)
+        //{
+        //    if (_opponentExpansionValue.ContainsKey(opponentID) == false)
+        //        SetOpponentExpansionValue(opponentID);
+
+        //    return _opponentExpansionValue[opponentID];
+        //}
+
+        private PlayerExpansionValueHeuristic _myExpansionValue;
+        public PlayerExpansionValueHeuristic MyExpansionValue()
+        {
+            if (_myExpansionValue == null)
+                _myExpansionValue = new PlayerExpansionValueHeuristic(BotState, this, BotState.Me.ID);
+            return _myExpansionValue;
+        }
+
         /// <returns>: a new Map object exactly the same as this one</returns>
         public BotMap GetMapCopy()
         {
@@ -26,6 +63,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             {
                 var newBonus = new BotBonus(newMap, bonus.ID);
                 newBonus.ExpansionValueCategory = bonus.ExpansionValueCategory;
+                // newBonus.setExpansionValue(sr.ExpansionValue);
                 newMap.Bonuses.Add(newBonus.ID, newBonus);
             }
             foreach (var territory in Territories.Values)
@@ -73,9 +111,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
         public static BotMap FromStanding(BotMain state, GameStanding stand)
         {
-            Assert.Fatal(stand != null, "stand is null");
-
-            var map = state.VisibleMap.GetMapCopy();
+            var map = state.FullMap.GetMapCopy();
             foreach (var terr in stand.Territories.Values)
             {
                 var territory = map.Territories[terr.ID];
@@ -178,7 +214,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             List<BotTerritory> outvar = new List<BotTerritory>();
             var copy = new List<BotTerritory>();
             copy.AddRange(inTerritories);
-            while (copy.Count != 0)
+            while (!copy.IsEmpty())
             {
                 var lowestDistanceTerritory = copy[0];
                 foreach (var territory in copy)
@@ -232,12 +268,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             return outvar;
         }
 
-        public static List<BotBonus> SortBonusesArmiesReward(List<BotBonus> bonuses)
+        public static List<BotBonus> SortBonusesArmiesReward(List<BotBonus> @in)
         {
             var outvar = new List<BotBonus>();
             var copy = new List<BotBonus>();
-            copy.AddRange(bonuses);
-            while (copy.Count != 0)
+            copy.AddRange(@in);
+            while (!copy.IsEmpty())
             {
                 var highestRewardBonus = copy[0];
                 foreach (BotBonus bonus in copy)
@@ -251,12 +287,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             return outvar;
         }
 
-        public static List<BotTerritory> GetOrderedListOfTerritoriesByIdleArmies(List<BotTerritory> terrs)
+        public static List<BotTerritory> GetOrderedListOfTerritoriesByIdleArmies(List<BotTerritory> @in)
         {
             var outvar = new List<BotTerritory>();
             var copy = new List<BotTerritory>();
-            copy.AddRange(terrs);
-            while (copy.Count != 0)
+            copy.AddRange(@in);
+            while (!copy.IsEmpty())
             {
                 var highestIdleArmiesTerritory = copy[0];
                 foreach (var territory in copy)

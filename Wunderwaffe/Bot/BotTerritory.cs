@@ -1,9 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using WarLight.Shared.AI.Wunderwaffe.Move;
+﻿ /*
+ * This code was auto-converted from a java project.
+ */
 
-namespace WarLight.Shared.AI.Wunderwaffe.Bot
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Move;
+
+
+namespace WarLight.AI.Wunderwaffe.Bot
 {
     public class BotTerritory
     {
@@ -16,6 +22,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         public TerritoryDetails Details
         {
             get { return BotState.Map.Territories[ID]; }
+        }
+
+
+        public override int GetHashCode()
+        {
+            return (int)this.ID;
         }
 
         public override string ToString()
@@ -77,11 +89,10 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         {
             var remainingArmies = this.GetArmiesAfterDeployment(type);
             foreach (var atm in IncomingMoves)
-                //remainingArmies = remainingArmies.Subtract(new Armies(SharedUtility.Round(atm.Armies.NumArmies * BotState.Settings.OffensiveKillRate)));
-                remainingArmies = remainingArmies.Subtract(new Armies(getOwnKills(atm.Armies.NumArmies, remainingArmies.DefensePower)));
+                remainingArmies = remainingArmies.Subtract(new Armies(SharedUtility.Ceiling(atm.Armies.NumArmies * BotState.Settings.OffensiveKillRate)));
 
             if (!remainingArmies.Fogged && remainingArmies.NumArmies < 1)
-                remainingArmies = new Armies(1, remainingArmies.SpecialUnits);
+                remainingArmies = new Armies(1, specialUnits: remainingArmies.SpecialUnits);
             return remainingArmies;
         }
 
@@ -95,25 +106,16 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
         public List<BotTerritory> GetNeighborsWithinSameBonus()
         {
-            List<BotTerritory> outvar = new List<BotTerritory>();
+            var outvar = new List<BotTerritory>();
             foreach (var neighbor in this.Neighbors)
             {
-                if (neighbor.Bonuses.Count == 0 || Bonuses.Count == 0)
-                {
-                    continue;
-                }
-                if (neighbor.Bonuses[0] == Bonuses[0])
-                {
+                if (Details.PartOfBonuses.Any(o => neighbor.Details.PartOfBonuses.Contains(o)))
                     outvar.Add(neighbor);
-                }
-                // TODO gives wrong result
-                //if (Details.PartOfBonuses.Any(o => neighbor.Details.PartOfBonuses.Contains(o)))
-                //    outvar.Add(neighbor);
             }
             return outvar;
         }
-
-
+        
+        
         public List<BotBonus> Bonuses
         {
             get
@@ -126,7 +128,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         {
             Null, Normal, Conservative
         }
-
+        
         /// <summary>type 1 = normal deployment, type 2 = conservative deployment</summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -152,7 +154,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         }
 
 
-
+        
         public List<BotOrderAttackTransfer> GetExpansionMoves()
         {
             var outvar = new List<BotOrderAttackTransfer>();
@@ -163,14 +165,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             }
             return outvar;
         }
-
+        
         public Armies GetArmiesAfterDeployment(DeploymentType type)
         {
             var armies = this.Armies;
             foreach (var pam in this.GetDeployment(type))
-            {
                 armies = armies.Add(new Armies(pam.Armies));
-            }
             return armies;
         }
 
@@ -185,14 +185,23 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
 
             return outvar.Subtract(new Armies(1));
         }
-
+       
         /// <param name="territory">a Territory object</param>
         /// <returns>True if this Territory is a neighbor of given Territory, false otherwise</returns>
         public bool IsNeighbor(BotTerritory territory)
         {
-            return Details.ConnectedTo.ContainsKey(territory.ID);
+            return Details.ConnectedTo.Contains(territory.ID);
         }
 
+        /// <param name="playerID">A string with a player's name</param>
+        /// <returns>True if this territory is owned by given playerID, false otherwise</returns>
+        //public bool OwnedByPlayer(PlayerIDType playerID)
+        //{
+        //    return playerID == this.playerID;
+        //}
+
+        
+        
         public int GetAmountOfBordersToOpponentBonus()
         {
             var outvar = 0;
@@ -233,7 +242,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
             return this.Neighbors.Where(o => o.OwnerPlayerID != BotState.Me.ID).ToList();
         }
 
-
         public List<BotTerritory> GetOpponentNeighbors()
         {
             var outvar = new List<BotTerritory>();
@@ -250,31 +258,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         {
             get
             {
-                return Details.ConnectedTo.Keys.Select(o => Parent.Territories[o]).ToList();
+                return Details.ConnectedTo.Select(o => Parent.Territories[o]).ToList();
             }
         }
-
-        public int getNeededBreakArmies(int opponentDefendingArmies)
-        {
-            int neededAttackArmies = (int)Math.Round((opponentDefendingArmies - 0.5) / BotState.Settings.OffenseKillRate);
-            if (getOwnKills(neededAttackArmies, opponentDefendingArmies) < opponentDefendingArmies)
-            {
-                neededAttackArmies++;
-            }
-            return neededAttackArmies;
-        }
-
-        public int getOwnKills(int ownAttackingArmies, int opponentDefendingArmies)
-        {
-            int expectedKills = (int)Math.Round(ownAttackingArmies * BotState.Settings.OffenseKillRate);
-            int expectedOwnLosses = (int)Math.Round(opponentDefendingArmies * BotState.Settings.DefenseKillRate);
-            if (expectedKills >= opponentDefendingArmies && expectedOwnLosses >= ownAttackingArmies)
-            {
-                expectedKills = expectedKills - 1;
-            }
-
-            return Math.Min(expectedKills, opponentDefendingArmies);
-        }
-
+        
     }
 }

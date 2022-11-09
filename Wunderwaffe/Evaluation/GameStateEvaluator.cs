@@ -1,9 +1,14 @@
-﻿using System.Collections.Generic;
+﻿/*
+* This code was auto-converted from a java project.
+*/
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Bot;
 
 
-namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
+namespace WarLight.AI.Wunderwaffe.Evaluation
 {
     /// <remarks>GameState is responsible for evaluating whether we are winning or losing.
     /// </remarks>

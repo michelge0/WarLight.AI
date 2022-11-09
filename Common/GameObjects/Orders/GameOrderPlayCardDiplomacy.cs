@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public class GameOrderPlayCardDiplomacy : GameOrderPlayCard
     {
@@ -24,11 +24,6 @@ namespace WarLight.Shared.AI
         public override TurnPhase? OccursInPhase
         {
             get { return TurnPhase.DiplomacyCards; }
-        }
-
-        public bool AffectsPlayer(PlayerIDType p)
-        {
-            return p == PlayerOne || p == PlayerTwo;
         }
 
     }

@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public class GameOrderPlayCardAirlift : GameOrderPlayCard
     {
         public TerritoryIDType FromTerritoryID;
         public TerritoryIDType ToTerritoryID;
-        private Armies NumArmies;
+        public Armies ArmiesToAirlift;
         public static GameOrderPlayCardAirlift Create(CardInstanceIDType cardInstanceID, PlayerIDType playerID, TerritoryIDType fromTerritoryID, TerritoryIDType toTerritoryID, Armies numArmies)
         {
             var o = new GameOrderPlayCardAirlift();
@@ -18,7 +18,7 @@ namespace WarLight.Shared.AI
             o.PlayerID = playerID;
             o.FromTerritoryID = fromTerritoryID;
             o.ToTerritoryID = toTerritoryID;
-            o.NumArmies = numArmies;
+            o.ArmiesToAirlift = numArmies;
             return o;
         }
 
@@ -27,16 +27,6 @@ namespace WarLight.Shared.AI
             get { return TurnPhase.Airlift; }
         }
 
-        public Armies Armies //must use this function instead of NumArmies directly for historical reasons :(
-        {
-            get
-            {
-                return this.NumArmies;
-            }
-            set
-            {
-                this.NumArmies = value;
-            }
-        }
+
     }
 }

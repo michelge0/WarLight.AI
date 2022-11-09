@@ -1,9 +1,15 @@
-﻿using System;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿/*
+* This code was auto-converted from a java project.
+*/
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using System;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Evaluation;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+using WarLight.AI.Wunderwaffe.Move;
+
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>BreakTerritoryTask is responsible for breaking a single territory with a good attack plan.
     /// </summary>
@@ -38,13 +44,51 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             return outvar;
         }
 
+        // int opponentArmies = opponentTerritory.getArmiesAfterDeploymentAndIncomingAttacks(lowerConservativeLevel);
+        //
+        // int neededAttackArmies = (int) Math.ceil(opponentArmies / 0.6);
+        // List<Territory> ownedNeighbors = opponentTerritory.GetOwnedNeighbors();
+        // List<Territory> presortedOwnedNeighbors = TerritoryValueCalculator.sortDefenseValue(ownedNeighbors);
+        // List<Territory> sortedOwnedNeighbors = Map.getOrderedListOfTerritoriesByIdleArmies(presortedOwnedNeighbors);
+        //
+        // // First deploy and then pull in more territories if necessary.
+        // int attackedWithSoFar = 0;
+        // for (int i = 0; i < sortedOwnedNeighbors.size(); i++) {
+        // if (i == 0) {
+        // int neededDeployment = Math.max(0, neededAttackArmies - sortedOwnedNeighbors.get(0).GetIdleArmies());
+        // int totalDeployment = Math.min(neededDeployment, maxDeployment);
+        // if (totalDeployment > 0) {
+        // PlaceArmiesMove pam = new PlaceArmiesMove(BotState.MyPlayerName,
+        // sortedOwnedNeighbors.get(0), totalDeployment);
+        // out.placeArmiesMoves.add(pam);
+        // }
+        // int attackingArmies = Math.min(neededAttackArmies, sortedOwnedNeighbors.get(0).GetIdleArmies()
+        // + totalDeployment);
+        // out.attackTransferMoves.add(new AttackTransferMove(BotState.MyPlayerName,
+        // sortedOwnedNeighbors.get(0), opponentTerritory, attackingArmies));
+        // attackedWithSoFar += attackingArmies;
+        // } else {
+        // // i != 0
+        // int stillNeededArmies = neededAttackArmies - attackedWithSoFar;
+        // if (stillNeededArmies > 0 && sortedOwnedNeighbors.get(i).GetIdleArmies ()> 1) {
+        // int newAttackingArmies = Math.min(stillNeededArmies, sortedOwnedNeighbors.get(i).GetIdleArmies());
+        // out.attackTransferMoves.add(new AttackTransferMove(BotState.MyPlayerName,
+        // sortedOwnedNeighbors.get(i), opponentTerritory, newAttackingArmies));
+        // attackedWithSoFar += newAttackingArmies;
+        // }
+        // }
+        // }
+        // if (attackedWithSoFar >= neededAttackArmies) {
+        // return out;
+        // } else {
+        // return null;
+        // }
         private Moves CalculateBreakTerritoryMoves(BotTerritory opponentTerritory, int maxDeployment, int opponentDeployment, string source)
         {
             var outvar = new Moves();
             var opponentArmies = opponentTerritory.Armies.DefensePower;
             opponentArmies += opponentDeployment;
-            var neededAttackArmies = opponentTerritory.getNeededBreakArmies(opponentArmies);
-            //var neededAttackArmies = SharedUtility.Round(opponentArmies / BotState.Settings.OffensiveKillRate);
+            var neededAttackArmies = SharedUtility.Ceiling(opponentArmies / BotState.Settings.OffensiveKillRate);
             var ownedNeighbors = opponentTerritory.GetOwnedNeighbors();
             var presortedOwnedNeighbors = BotState.TerritoryValueCalculator.SortDefenseValue(ownedNeighbors);
             var sortedOwnedNeighbors = BotMap.GetOrderedListOfTerritoriesByIdleArmies(

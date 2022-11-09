@@ -1,8 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿/*
+* This code was auto-converted from a java project.
+*/
 
-namespace WarLight.Shared.AI.Wunderwaffe.Move
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Evaluation;
+
+
+
+namespace WarLight.AI.Wunderwaffe.Move
 {
     /// <summary>This class is responsible for cleaning up moves.</summary>
     /// <remarks>
@@ -13,7 +21,6 @@ namespace WarLight.Shared.AI.Wunderwaffe.Move
     {
         public static void CleanupMoves(BotMain state, Moves moves)
         {
-            Debug.Debug.PrintMoves(state, moves);
             DeleteOldMovesFromMap(state);
             MergeMoves(state, moves);
             state.MapUpdater.UpdateMap(state.WorkingMap);

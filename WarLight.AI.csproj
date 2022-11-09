@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -7,7 +7,7 @@
     <ProjectGuid>{630A9CC5-328A-4569-8CBB-568410D7ADB3}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WarLight.Shared.AI</RootNamespace>
+    <RootNamespace>WarLight.AI</RootNamespace>
     <AssemblyName>WarLight.AI</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -51,76 +51,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BotFactory.cs" />
-    <Compile Include="Common\GameObjects\ActiveCard.cs" />
     <Compile Include="Common\GameObjects\AttackTransferEnum.cs" />
-    <Compile Include="Common\GameObjects\CardType.cs" />
-    <Compile Include="Common\GameObjects\Orders\GameOrderPurchase.cs" />
     <Compile Include="Common\GameObjects\PlayerIncomeTracker.cs" />
-    <Compile Include="Common\GameObjects\ResourceType.cs" />
-    <Compile Include="Common\GameObjects\StructureType.cs" />
-    <Compile Include="Common\StressTest.cs" />
-    <Compile Include="Common\PlayCrazy.cs" />
     <Compile Include="Common\PlayExported.cs" />
     <Compile Include="Common\PlayBots.cs" />
     <Compile Include="Common\PlayFFA.cs" />
     <Compile Include="Common\PlayAI.cs" />
     <Compile Include="Common\PlayHuman.cs" />
     <Compile Include="Common\IWarLightAI.cs" />
-    <Compile Include="Common\Compete.cs" />
-    <Compile Include="Common\Util\KeyValueList.cs" />
-    <Compile Include="Cowzow\Bot\BonusAnalyzer.cs" />
-    <Compile Include="Cowzow\Bot\CowzowBot.cs" />
-    <Compile Include="Cowzow\Bot\OrderManager.cs" />
-    <Compile Include="Cowzow\Comparators\AttackOrderComparator.cs" />
-    <Compile Include="Cowzow\Comparators\EdgeChooser.cs" />
-    <Compile Include="Cowzow\Comparators\EdgePriorityComparator.cs" />
-    <Compile Include="Cowzow\Comparators\StartingTerritoryComparator.cs" />
-    <Compile Include="Cowzow\Comparators\TerritoryArmyComparator.cs" />
-    <Compile Include="Cowzow\Comparators\TerritoryPriorityComparator.cs" />
-    <Compile Include="Cowzow\Fulkerson2\Edge.cs" />
-    <Compile Include="Cowzow\Fulkerson2\EdgeHashSet.cs" />
-    <Compile Include="Cowzow\Fulkerson2\TerritoryBipartiteNetwork.cs" />
-    <Compile Include="Cowzow\Fulkerson2\TerritoryNetwork.cs" />
-    <Compile Include="Cowzow\Map\BotBonus.cs" />
-    <Compile Include="Cowzow\Map\BotMap.cs" />
-    <Compile Include="Cowzow\Map\BotTerritory.cs" />
-    <Compile Include="Cowzow\Map\MapUtils.cs" />
-    <Compile Include="Cowzow\Move\BotOrder.cs" />
-    <Compile Include="Cowzow\Move\BotOrderAttackTransfer.cs" />
-    <Compile Include="Cowzow\Move\BotOrderDeploy.cs" />
-    <Compile Include="Prod\BonusPath.cs" />
     <Compile Include="Prod\BotMain.cs" />
-    <Compile Include="Prod\MakeOrders\DefendAttack.cs" />
-    <Compile Include="Prod\MakeOrders\DeployRemaining.cs" />
-    <Compile Include="Prod\MakeOrders\Expand.cs" />
-    <Compile Include="Prod\ExpansionHelper.cs" />
-    <Compile Include="Prod\FindPath.cs" />
-    <Compile Include="Prod\MakeOrders\ExpandNormal.cs" />
-    <Compile Include="Prod\MakeOrders\MoveLandlockedUp.cs" />
-    <Compile Include="Prod\MakeOrders\MultiAttackExpand.cs" />
-    <Compile Include="Prod\MakeOrders\MultiAttackPathToBonus.cs" />
-    <Compile Include="Prod\MakeOrders\MultiAttackPlan.cs" />
-    <Compile Include="Prod\MakeOrders\PossibleExpandTarget.cs" />
-    <Compile Include="Prod\MakeOrders\SpecialUnits.cs" />
-    <Compile Include="Prod\MakePicks\PickByWeight.cs" />
-    <Compile Include="Prod\MakePicks\PickCluster.cs" />
-    <Compile Include="Prod\Neighbor.cs" />
-    <Compile Include="Prod\MakeOrders\OrdersManager.cs" />
-    <Compile Include="Prod\MakePicks\PickTerritories.cs" />
-    <Compile Include="Prod\MakeOrders\MakeOrdersMain.cs" />
-    <Compile Include="Prod\MakeOrders\PlayCards.cs" />
-    <Compile Include="Prod\MakeOrders\PossibleAttack.cs" />
-    <Compile Include="Prod\MakeOrders\ResolveTeamBonuses.cs" />
-    <Compile Include="Prod\MakeOrders\UtilizeSpareArmies.cs" />
-    <Compile Include="Prod\CaptureTerritories.cs" />
+    <Compile Include="Prod\PickTerritories.cs" />
+    <Compile Include="Prod\TakePlayingTurn.cs" />
     <Compile Include="Wunderwaffe\BasicAlgorithms\DistanceCalculator.cs" />
     <Compile Include="Wunderwaffe\Bot\BotBonus.cs" />
     <Compile Include="Common\AIGamesParser.cs" />
     <Compile Include="Wunderwaffe\Bot\BotMain.cs" />
-    <Compile Include="Wunderwaffe\Bot\Cards\Card.cs" />
-    <Compile Include="Wunderwaffe\Bot\Cards\CardsHandler.cs" />
-    <Compile Include="Wunderwaffe\Bot\Cards\CardTypes.cs" />
-    <Compile Include="Wunderwaffe\Bot\Cards\ReinforcementCard.cs" />
     <Compile Include="Wunderwaffe\Bot\DeploymentHistory.cs" />
     <Compile Include="Wunderwaffe\Bot\HistoryTracker.cs" />
     <Compile Include="Wunderwaffe\Bot\BotMap.cs" />
@@ -168,16 +113,16 @@
     <Compile Include="Common\GameObjects\TerritoryStanding.cs" />
     <Compile Include="Wunderwaffe\Debug\Debug.cs" />
     <Compile Include="Wunderwaffe\Evaluation\ExpansionMapUpdater.cs" />
-    <Compile Include="Wunderwaffe\Evaluation\StatefulFogRemover.cs" />
     <Compile Include="Wunderwaffe\Evaluation\GameStateEvaluator.cs" />
     <Compile Include="Wunderwaffe\Evaluation\LastVisibleMapUpdater.cs" />
     <Compile Include="Wunderwaffe\Evaluation\MapUpdater.cs" />
     <Compile Include="Wunderwaffe\Evaluation\OpponentDeploymentGuesser.cs" />
     <Compile Include="Wunderwaffe\Evaluation\PicksEvaluator.cs" />
-    <Compile Include="Wunderwaffe\Evaluation\StatelessFogRemover.cs" />
     <Compile Include="Wunderwaffe\Evaluation\TerritoryValueCalculator.cs" />
     <Compile Include="Wunderwaffe\Evaluation\BonusExpansionValueCalculator.cs" />
     <Compile Include="Wunderwaffe\Evaluation\BonusValueCalculator.cs" />
+    <Compile Include="Wunderwaffe\Heuristics\PlayerExpansionValueHeuristic.cs" />
+    <Compile Include="Wunderwaffe\Heuristics\BonusExpansionValueHeuristic.cs" />
     <Compile Include="Common\GameObjects\MapDetails.cs" />
     <Compile Include="Common\GameObjects\TerritoryDetails.cs" />
     <Compile Include="Common\GameObjects\BonusDetails.cs" />
@@ -188,11 +133,15 @@
     <Compile Include="Wunderwaffe\Move\MovesCleaner.cs" />
     <Compile Include="Wunderwaffe\Move\MovesCommitter.cs" />
     <Compile Include="Wunderwaffe\Move\BotOrderDeploy.cs" />
+    <Compile Include="Wunderwaffe\Move\SameMovesJoiner.cs" />
     <Compile Include="Wunderwaffe\Strategy\MovesCalculator.cs" />
     <Compile Include="Wunderwaffe\Strategy\MovesScheduler.cs" />
+    <Compile Include="Wunderwaffe\Strategy\MovesScheduler2.cs" />
+    <Compile Include="Wunderwaffe\Strategy\RunawayStrategy.cs" />
     <Compile Include="Wunderwaffe\Strategy\TakeTerritoriesTaskCalculator.cs" />
     <Compile Include="Wunderwaffe\Strategy\TransferMovesChooser.cs" />
     <Compile Include="Wunderwaffe\Tasks\AttackTerritoriesTask.cs" />
+    <Compile Include="Wunderwaffe\Tasks\BonusRunTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\BreakTerritoriesTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\BreakTerritoryTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\DefendTerritoriesTask.cs" />
@@ -200,7 +149,6 @@
     <Compile Include="Wunderwaffe\Tasks\DefendBonusTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\DelayTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\DeleteBadMovesTask.cs" />
-    <Compile Include="Wunderwaffe\Tasks\ExpansionTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\FlankBonusTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\JoinInAttacksTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\MoveIdleArmiesTask.cs" />
@@ -216,6 +164,10 @@
     <Compile Include="Wunderwaffe\Tasks\PreventBonusTask.cs" />
     <Compile Include="Wunderwaffe\Tasks\TakeBonusOverTask.cs" />
     <Compile Include="Common\Util\SharedUtility.cs" />
+    <Compile Include="LaconicEntity\Edge.cs" />
+    <Compile Include="LaconicEntity\LMain.cs" />
+    <Compile Include="LaconicEntity\LTerritory.cs" />
+    <Compile Include="LaconicEntity\PickTerritories.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

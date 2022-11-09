@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -8,13 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public static class Communication
     {
-        public static string HttpRoot = "http://aiserver.warzone.com/api/";
         //public static string HttpRoot = "http://192.168.1.105:81/AIServer/api/";
-        //public static string HttpRoot = "http://192.168.1.105:9000/AIServer/api/";
+        public static string HttpRoot = "http://aiserver.warzone.com/api/";
 
         public static JToken Call(string api, JToken input)
         {
@@ -99,7 +97,7 @@ namespace WarLight.Shared.AI
             {
                 var td = new TerritoryDetails(map, (TerritoryIDType)(int)terrNode["id"]);
                 td.Name = (string)terrNode["name"];
-                td.ConnectedTo = terrNode["connectedTo"].As<JArray>().Select(o => (TerritoryIDType)(int)o).ToDictionary(o => o, o => (object)null);
+                td.ConnectedTo = terrNode["connectedTo"].As<JArray>().Select(o => (TerritoryIDType)(int)o).ToHashSet(true);
                 map.Territories.Add(td.ID, td);
             }
 
@@ -133,30 +131,6 @@ namespace WarLight.Shared.AI
         {
             var overriddenBonuses = settingsNode["OverriddenBonuses"].As<JArray>().ToDictionary(o => (BonusIDType)(int)o["bonusID"], o => (int)o["value"]);
             var terrLimit = settingsNode["TerritoryLimit"].Type == JTokenType.String ? 0 : (int)settingsNode["TerritoryLimit"];
-            var roundingMode = (RoundingModeEnum)Enum.Parse(typeof(RoundingModeEnum), (string)settingsNode["RoundingMode"]);
-            var fog = (GameFogLevel)Enum.Parse(typeof(GameFogLevel), (string)settingsNode["Fog"]);
-
-            var cards = new Dictionary<CardIDType, object>();
-            Action<CardType, string> addCard = (cardType, nodeName) =>
-            {
-                var node = settingsNode[nodeName];
-                if (node.Type == JTokenType.Object)
-                    cards.Add(cardType.CardID, null);
-            };
-            addCard(CardType.Airlift, "AirliftCard");
-            addCard(CardType.Blockade, "BlockadeCard");
-            addCard(CardType.Bomb, "BombCard");
-            addCard(CardType.Diplomacy, "DiplomacyCard");
-            addCard(CardType.EmergencyBlockade, "AbandonCard");
-            addCard(CardType.Gift, "GiftCard");
-            addCard(CardType.OrderDelay, "OrderDelayCard");
-            addCard(CardType.OrderPriority, "OrderPriorityCard");
-            addCard(CardType.Reconnaissance, "ReconnaissanceCard");
-            addCard(CardType.Reinforcement, "ReinforcementCard");
-            addCard(CardType.Sanctions, "SanctionsCard");
-            addCard(CardType.Spy, "SpyCard");
-            addCard(CardType.Surveillance, "SurveillanceCard");
-
 
             return new GameSettings(
                 (double)settingsNode["OffensiveKillRate"] / 100.0,
@@ -170,16 +144,7 @@ namespace WarLight.Shared.AI
                 overriddenBonuses,
                 (bool)settingsNode["Commanders"],
                 (bool)settingsNode["AllowAttackOnly"],
-                (bool)settingsNode["AllowTransferOnly"],
-                (int)settingsNode["InitialPlayerArmiesPerTerritory"],
-                roundingMode,
-                (double)settingsNode["LuckModifier"],
-                (bool)settingsNode["MultiAttack"],
-                (bool)settingsNode["AllowPercentageAttacks"],
-                cards,
-                (bool)settingsNode["LocalDeployments"],
-                fog,
-                (bool)settingsNode["NoSplit"]
+                (bool)settingsNode["AllowTransferOnly"]
                 );
 
         }
@@ -208,8 +173,6 @@ namespace WarLight.Shared.AI
             return ret;
         }
 
-        static CultureInfo EnUS = new CultureInfo("en-US");
-
         public static GameTurn ReadGameTurn(JToken jToken)
         {
             if (jToken.Type == JTokenType.String && (string)jToken == "null")
@@ -217,7 +180,7 @@ namespace WarLight.Shared.AI
 
             var ret = new GameTurn();
 
-            ret.Date = DateTime.Parse((string)jToken["date"], EnUS);
+            ret.Date = DateTime.Parse((string)jToken["date"]);
             ret.Orders = ReadOrders(jToken["orders"]);
             return ret;
         }
@@ -234,7 +197,8 @@ namespace WarLight.Shared.AI
                 var terrID = (TerritoryIDType)(int)terr["terrID"];
                 var playerID = ToPlayerID((string)terr["ownedBy"]);
                 var armies = ToArmies((string)terr["armies"]);
-                ret.Territories.Add(terrID, TerritoryStanding.Create(terrID, playerID, armies));
+                ret.Territories.Add(terrID, new TerritoryStanding(terrID, playerID, armies));
+                
             }
 
             return ret;
@@ -278,7 +242,7 @@ namespace WarLight.Shared.AI
             {
                 var terrID = (TerritoryIDType)(int)jOrder["deployOn"];
                 var armies = (int)jOrder["armies"];
-                return GameOrderDeploy.Create(playerID, armies, terrID, false);
+                return GameOrderDeploy.Create(armies, playerID, terrID);
             }
 
             if (type == "GameOrderAttackTransfer")
@@ -412,7 +376,7 @@ namespace WarLight.Shared.AI
                     var airlift = order.As<GameOrderPlayCardAirlift>();
                     jOrder["from"] = (int)airlift.FromTerritoryID;
                     jOrder["to"] = (int)airlift.ToTerritoryID;
-                    jOrder["armiesToAirlift"] = airlift.Armies.SerializeToString();
+                    jOrder["armiesToAirlift"] = airlift.ArmiesToAirlift.SerializeToString();
                 }
                 else if (order is GameOrderPlayCardGift)
                 {

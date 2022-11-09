@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿ /*
+ * This code was auto-converted from a java project.
+ */
 
-namespace WarLight.Shared.AI.Wunderwaffe.Move
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Evaluation;
+
+namespace WarLight.AI.Wunderwaffe.Move
 {
     /// <summary>This class is responsible for committing moves.</summary>
     public class MovesCommitter

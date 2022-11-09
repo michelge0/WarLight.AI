@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public class PlayerIncomeProgress
     {
@@ -133,7 +133,7 @@ namespace WarLight.Shared.AI
                         var avail = _income.BonusRestrictions[bonusID];
                         if (avail > used)
                         {
-                            var toUse = Math.Min(numArmies, avail - used); //can't name a variable "use" in actionscript
+                            var toUse = SharedUtility.MathMin(numArmies, avail - used); //can't name a variable "use" in actionscript
 
                             if (_income.FreeArmies - _freeArmiesUsedOn.Values.Sum() < numArmies - toUse)
                                 return false; //We have some armies we could award from this bonus, but we wouldn't have enough free armies to award the rest of what's requested.  Therefore, abort now before recording bonus armies, so that the function doesn't change something and also return false.
@@ -209,7 +209,7 @@ namespace WarLight.Shared.AI
 
                 if (free > 0)
                 {
-                    var toMove = Math.Min(free, availInBonus);
+                    var toMove = SharedUtility.MathMin(free, availInBonus);
 
                     _freeArmiesUsedOn.AddTo(terrID, -toMove);
                     _armiesUsedOnBonuses.AddTo(bonusID, toMove);
@@ -259,17 +259,5 @@ namespace WarLight.Shared.AI
             }
         }
 
-        public int ArmiesDeployedToBonus(BonusIDType bonusID)
-        {
-            return _armiesUsedOnBonuses.ValueOrZero(bonusID);
-        }
-
-        public int TotalArmiesDeployed
-        {
-            get
-            {
-                return _freeArmiesUsedOn.Values.Sum() + _armiesUsedOnBonuses.Values.Sum();
-            }
-        }
     }
 }

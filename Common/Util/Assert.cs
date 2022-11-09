@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
 
     public static class Assert

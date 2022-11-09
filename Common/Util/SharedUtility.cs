@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public static class SharedUtility
     {
@@ -34,10 +34,19 @@ namespace WarLight.Shared.AI
             return s.Substring(0, s.Length - toRemove.Length);
         }
 
-        public static void RemoveAll<T>(this HashSet<T> col, IEnumerable<T> rem)
+        public static void RemoveAll<T>(this ICollection<T> col, IEnumerable<T> rem)
         {
             foreach (var r in rem)
                 col.Remove(r);
+        }
+        public static bool IsEmpty<T>(this ICollection<T> col)
+        {
+            return (col.Count == 0);
+        }
+
+        public static bool IsEmpty<T>(this Stack<T> col)
+        {
+            return (col.Count == 0);
         }
         public static bool None<T>(this IEnumerable<T> a)
         {
@@ -83,6 +92,11 @@ namespace WarLight.Shared.AI
             else
                 return c + 1;
         }
+        public static string JoinToStrings<T>(this IEnumerable<T> a, string seperator = "")
+        {
+            return string.Join(seperator, a.Select(o => o.ToString()).ToArray());
+        }
+
         public static string JoinStrings(this IEnumerable<string> a, string seperator = "")
         {
             return string.Join(seperator, a.ToArray());
@@ -142,6 +156,24 @@ namespace WarLight.Shared.AI
             else
                 return 0;
         }
+        /// <summary>
+        /// This is needed for haXe, since it does not have an integer max function.  It also can't be called MaxInt since there's already one of those for Linq overload resolution.
+        /// </summary>
+        public static int MathMax(int i1, int i2)
+        {
+            if (i1 > i2)
+                return i1;
+            else
+                return i2;
+        }
+
+        public static int MathMin(int i1, int i2)
+        {
+            if (i1 < i2)
+                return i1;
+            else
+                return i2;
+        }
 
         /// <summary>
         /// Most comparisons work just with f - s, however ActionScript only works when -1, 0 and 1 are returned, so define this helper function
@@ -155,63 +187,6 @@ namespace WarLight.Shared.AI
             foreach (T t in a)
                 action(t);
         }
-
-        /// <summary>
-        /// Parses the passed string into an integer. If the passed string cannot be parsed, returns 0.  
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static int ParseOrZero(string str)
-        {
-            int i;
-            if (int.TryParse(str, out i))
-                return i;
-            else
-                return 0;
-        }
-
-
-
-        public static T MaxSelectorOrDefault<T>(this IEnumerable<T> a, Func<T, int> selector) where T : class
-        {
-            T ret = null;
-
-            int max = int.MinValue;
-            foreach (var e in a)
-            {
-                int v = selector(e);
-                if (v > max)
-                {
-                    max = v;
-                    ret = e;
-                }
-            }
-            return ret;
-        }
-        public static bool ContainsAll<T>(this HashSet<T> col, IEnumerable<T> items)
-        {
-            foreach (var u in items)
-                if (!col.Contains(u))
-                    return false;
-            return true;
-        }
-        public static V GetOr<K, V>(this Dictionary<K, V> dict, K key, V def)
-        {
-            V ret;
-            if (dict.TryGetValue(key, out ret))
-                return ret;
-            else
-                return def;
-        }
-
-        public static Queue<T> ToQueue<T>(this IEnumerable<T> array)
-        {
-            var queue = new Queue<T>();
-            foreach (var a in array)
-                queue.Enqueue(a);
-            return queue;
-        }
-
     }
 
 }

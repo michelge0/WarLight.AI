@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public static class PlayExported
     {
@@ -16,7 +16,7 @@ namespace WarLight.Shared.AI
             var folder = args[1];
             var gameID = (GameIDType)int.Parse(args[2]);
             var playerID = (PlayerIDType)int.Parse(args[3]);
-            var turnNumber = args[4].ToLower() == "latest" ? (int?)null : int.Parse(args[4]) - 1;
+            var turnNumber = int.Parse(args[4]) - 1;
 
             var details = BotGameAPI.GetBotExportedGame(gameID, ReadExported(folder, gameID), playerID, turnNumber);
 
@@ -26,7 +26,7 @@ namespace WarLight.Shared.AI
         public static string ReadExported(string folder, GameIDType gameID)
         {
             var dir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), folder);
-            return File.ReadAllText(Path.Combine(dir, Directory.GetFiles(dir, gameID + "*.txt").Single()));
+            return File.ReadAllText(Path.Combine(dir, gameID + ".txt"));
         }
     }
 }

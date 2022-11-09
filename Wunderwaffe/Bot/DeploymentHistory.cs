@@ -1,6 +1,14 @@
-﻿using System.Collections.Generic;
+﻿ /*
+ * This code was auto-converted from a java project.
+ */
 
-namespace WarLight.Shared.AI.Wunderwaffe.Bot
+using System;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Evaluation;
+
+
+
+namespace WarLight.AI.Wunderwaffe.Bot
 {
     public class DeploymentHistory
     {
@@ -23,8 +31,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Bot
         
         public virtual void Update(PlayerIDType opponentID, int opponentDeployment)
         {
-            AILog.Log("DeploymentHistory", "VisibleDeployment for " + opponentID + ": " + opponentDeployment);
-            OpponentDeployments[opponentID] = opponentDeployment;
+            OpponentDeployments.Add(opponentID, opponentDeployment);
+            AILog.Log("VisibleDeployment for " + opponentID + ": " + opponentDeployment);
         }
         
     }

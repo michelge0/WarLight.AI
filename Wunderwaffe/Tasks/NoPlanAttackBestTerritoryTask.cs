@@ -1,9 +1,16 @@
-﻿using System.Linq;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿/*
+* This code was auto-converted from a java project.
+*/
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Evaluation;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+using WarLight.AI.Wunderwaffe.Move;
+
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>
     /// NoPlanAttackBestTerritoryTask is responsible for attacking the best opponent territory with good attacks and without following a specific plan.

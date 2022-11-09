@@ -1,4 +1,10 @@
-﻿namespace WarLight.Shared.AI.Wunderwaffe.Move
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace WarLight.AI.Wunderwaffe.Move
 {
     public class BotOrderGeneric : BotOrder
     {

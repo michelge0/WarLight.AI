@@ -1,7 +1,13 @@
-﻿
-using System;
+﻿/*
+* This code was auto-converted from a java project.
+*/
 
-namespace WarLight.Shared.AI
+
+
+using System;
+using WarLight.AI.Wunderwaffe.Bot;
+
+namespace WarLight.AI
 {
 
 
@@ -33,11 +39,6 @@ namespace WarLight.Shared.AI
             return r;
         }
 
-        public override string ToString()
-        {
-            return AttackTransfer + " by " + this.PlayerID + " from " + this.From + " to " + this.To + ", ByPercent=" + ByPercent + ", NumArmies = " + NumArmies;
-        }
-
-
+        
     }
 }

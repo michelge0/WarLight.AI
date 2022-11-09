@@ -1,9 +1,16 @@
-﻿using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿/*
+* This code was auto-converted from a java project.
+*/
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Evaluation;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+using WarLight.AI.Wunderwaffe.Move;
+
+using WarLight.AI.Wunderwaffe.Strategy;
+
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>This class is responsible for flanking a Bonus owned by the opponent.
     /// </summary>
@@ -18,7 +25,8 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
         public static Moves CalculateFlankBonusTask(BotMain state, int maxDeployment)
         {
             Moves outvar = null;
-            var sortedFlankingTerritories = state.TerritoryValueCalculator.GetSortedFlankingValueTerritories();
+            var sortedFlankingTerritories = state.TerritoryValueCalculator.GetSortedFlankingValueTerritories
+                ();
             foreach (var flankableTerritory in sortedFlankingTerritories)
             {
                 if (flankableTerritory.FlankingTerritoryValue <= 2)

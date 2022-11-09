@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public static class RandomUtility
     {
@@ -25,32 +25,15 @@ namespace WarLight.Shared.AI
         public static T WeightedRandom<T>(this IEnumerable<T> array, Func<T, double> weightSelector)
         {
             double sum = array.Select(weightSelector).Sum();
-            var val = RandomPercentage() * sum;
             foreach (var item in array)
             {
-                val -= weightSelector(item);
-                if (val <= 0)
+                sum -= weightSelector(item);
+                if (sum <= 0)
                     return item;
             }
 
             //We should only get here if all weights are 0
             return array.Random();
-        }
-        public static int WeightedRandomIndex<T>(this List<T> array, Func<T, double> weightSelector)
-        {
-            double sum = array.Select(weightSelector).Sum();
-            var val = RandomPercentage() * sum;
-            
-            for(int i=0;i<array.Count;i++)
-            {
-                var item = array[i];
-                val -= weightSelector(item);
-                if (val <= 0)
-                    return i;
-            }
-
-            //We should only get here if all weights are 0
-            return RandomNumber(array.Count);
         }
 
         public static IEnumerable<T> OrderByRandom<T>(this IEnumerable<T> items)
@@ -112,14 +95,6 @@ namespace WarLight.Shared.AI
 #else
             return RandomGenerator.NextDouble();
 #endif
-        }
-
-        public static double BellRandom(double min, double max)
-        {
-            var range = max - min;
-            var halfRange = range / 2.0;
-            var r = RandomPercentage() * halfRange + RandomPercentage() * halfRange;
-            return r + min;
         }
 
         public static KeyValuePair<Y, T> PickRandom<Y, T>(Dictionary<Y, T> distributeTo)

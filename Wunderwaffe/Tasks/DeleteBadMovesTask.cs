@@ -1,10 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Move;
+﻿ /*
+ * This code was auto-converted from a java project.
+ */
 
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+
+using WarLight.AI.Wunderwaffe.Move;
+
+
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>DeleteBadMovesTask is responsible for deleting bad moves from previous steps.
     /// </summary>
@@ -55,8 +61,13 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             var interestingTransfers = new List<BotOrderAttackTransfer>();
             foreach (var atm in movesSoFar.Orders.OfType<BotOrderAttackTransfer>())
             {
+                // TODO getArmies() > 1 ???
                 if (atm.Armies.AttackPower > 1 && atm.To.OwnerPlayerID == BotState.Me.ID && atm.From.GetTotalDeployment(BotTerritory.DeploymentType.Normal) > 0)
                     interestingTransfers.Add(atm);
+            }
+            if (interestingTransfers.Count > 0)
+            {
+                AILog.Log("interestingTransfers.size(): " + interestingTransfers.Count);
             }
             foreach (var atm_1 in interestingTransfers)
             {

@@ -2,10 +2,8 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
-using System.IO;
-using System.Diagnostics;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
 
     /// <summary>
@@ -27,11 +25,28 @@ namespace WarLight.Shared.AI
         static int NumberOfTurns = -1;
         static Dictionary<PlayerIDType, GamePlayer> Players;
 
+        private static void InitBot()
+        {
+            Bot = BotFactory.Construct("Wunderwaffe");
+
+            Players = new Dictionary<PlayerIDType, GamePlayer>();
+            Players.Add(MyPlayerID, new GamePlayer(MyPlayerID, GamePlayerState.Playing, PlayerInvite.NoTeam, 0, false, false, false));
+            Players.Add(OpponentPlayerID, new GamePlayer(OpponentPlayerID, GamePlayerState.Playing, PlayerInvite.NoTeam, 0, false, false, false));
+
+
+            var incomes = new Dictionary<PlayerIDType, PlayerIncome>();
+            incomes.Add(MyPlayerID, new PlayerIncome(StartingArmies));
+            incomes.Add(OpponentPlayerID, new PlayerIncome(5));
+
+
+            Bot.Init(MyPlayerID, Players, Map, DistributionStanding, new GameSettings(0.6, 0.7, true, 5, 2, 2, 0, (DistributionIDType)0, new Dictionary<BonusIDType, int>(), false, false, false), NumberOfTurns, incomes, PrevTurn, LatestTurnStanding, PreviousTurnStanding, new Dictionary<PlayerIDType, TeammateOrders>(), new List<CardInstance>(), 0);
+        }
+
+        static IWarLightAI Bot;
+
 
         public static void Go(string[] args)
         {
-            Console.SetIn(new StreamReader(Console.OpenStandardInput(512))); //from http://theaigames.com/languages/cs
-
             while (true)
             {
                 var line = Console.ReadLine();
@@ -47,10 +62,9 @@ namespace WarLight.Shared.AI
                 {
                     if (PickedTerritories == null)
                     {
-                        LatestTurnStanding = DistributionStanding; //during picking, LatestStanding and DistributionStanding are the same thing
                         InitBot();
                         PickedTerritories = Bot.GetPicks();
-                        AILog.Log("AIGamesParser", "Bot picked " + PickedTerritories.Select(o => o.ToString()).JoinStrings(" "));
+                        AILog.Log("Bot picked " + PickedTerritories.JoinToStrings(" "));
                     }
 
                     var timeout = long.Parse(parts[1]);
@@ -62,7 +76,7 @@ namespace WarLight.Shared.AI
                         Console.Out.WriteLine(pick[0]);
                     else
                     {
-                        AILog.Log("AIGamesParser", "None of bot's picks are still available, picking random");
+                        AILog.Log("None of bot's picks are still available, picking random");
                         Console.Out.WriteLine(pickableStartingTerritories.Random());
                     }
                 }
@@ -77,8 +91,6 @@ namespace WarLight.Shared.AI
                     var output = new StringBuilder();
                     if (parts[1] == "place_armies")
                     {
-                        AILog.Log("AIGamesParser", "================= Beginning turn " + NumberOfTurns + " =================");
-
                         //Re-create the bot before every turn.  This is done to simulate how the bot will run in production -- it can't be active and maintaining state for the entirety of a multi-day game, since those can take months or years.  Instead, it will be created before each turn, ran once, then thrown away.
                         InitBot();
 
@@ -121,9 +133,6 @@ namespace WarLight.Shared.AI
                     throw new Exception("Unable to parse line \"" + line + "\"");
             }
         }
-
-
-
 
         private static void UpdateSettings(string key, string value)
         {
@@ -186,16 +195,16 @@ namespace WarLight.Shared.AI
                     var terrID = (TerritoryIDType)int.Parse(mapInput[i++]);
 
                     var terr = Map.Territories[terrID];
-                    mapInput[i].Split(',').Select(o => (TerritoryIDType)int.Parse(o)).ForEach(o => terr.ConnectedTo.Add(o, null));
-                    foreach (var conn in terr.ConnectedTo.Keys)
-                        Map.Territories[conn].ConnectedTo[terrID] = null;
+                    terr.ConnectedTo.AddRange(mapInput[i].Split(',').Select(o => (TerritoryIDType)int.Parse(o)));
+                    foreach (var conn in terr.ConnectedTo)
+                        Map.Territories[conn].ConnectedTo.Add(terrID);
 
                 }
 
                 //Map is now done being read
                 DistributionStanding = new GameStanding();
                 foreach (var terr in Map.Territories.Values)
-                    DistributionStanding.Territories.Add(terr.ID, TerritoryStanding.Create(terr.ID, TerritoryStanding.NeutralPlayerID, new Armies(2)));
+                    DistributionStanding.Territories.Add(terr.ID, new TerritoryStanding(terr.ID, TerritoryStanding.NeutralPlayerID, new Armies(2)));
             }
             else if (mapInput[1] == "wastelands")
             {
@@ -208,17 +217,20 @@ namespace WarLight.Shared.AI
                 throw new Exception("Unexpected map input: " + mapInput[1]);
         }
 
+        
         private static GameStanding ReadMap(string[] mapInput)
         {
-            var ret = new GameStanding(Map.Territories.Values.Select(o => TerritoryStanding.Create(o.ID, TerritoryStanding.FogPlayerID, new Armies(fogged: true))));
+            var terrs = new List<TerritoryStanding>();
 
             for (var i = 1; i < mapInput.Length; i++)
             {
-                var ts = ret.Territories[(TerritoryIDType)int.Parse(mapInput[i++])];
-                ts.OwnerPlayerID = (PlayerIDType)ToPlayerID(mapInput[i++]);
-                ts.NumArmies = new Armies(int.Parse(mapInput[i]));
+                var terrID = (TerritoryIDType)int.Parse(mapInput[i++]);
+                var playerID = (PlayerIDType)ToPlayerID(mapInput[i++]);
+                var armies = int.Parse(mapInput[i]);
+                terrs.Add(new TerritoryStanding(terrID, playerID, new Armies(armies)));
             }
-            return ret;
+            return new GameStanding(terrs);
+
         }
 
         private static void ReadOpponentMoves(string[] moveInput)
@@ -233,18 +245,8 @@ namespace WarLight.Shared.AI
                     var playerID = ToPlayerID(moveInput[i]);
                     var terrID = (TerritoryIDType)int.Parse(moveInput[i + 2]);
                     var armies = int.Parse(moveInput[i + 3]);
+                    order = GameOrderDeploy.Create(armies, playerID, terrID);
                     i += 3;
-
-                    var existing = orders.OfType<GameOrderDeploy>().FirstOrDefault(o => o.DeployOn == terrID);
-                    if (existing != null)
-                    {
-                        //Don't allow dupe deploy orders.  Just add it to the existing one
-                        Assert.Fatal(existing.PlayerID == playerID);
-                        existing.NumArmies += armies;
-                        continue;
-                    }
-
-                    order = GameOrderDeploy.Create(playerID, armies, terrID, false);
                 }
                 else
                 {
@@ -297,25 +299,6 @@ namespace WarLight.Shared.AI
         }
 
 
-
-        private static void InitBot()
-        {
-            Bot = BotFactory.Construct("Prod");
-
-            Players = new Dictionary<PlayerIDType, GamePlayer>();
-            Players.Add(MyPlayerID, new GamePlayer(MyPlayerID, GamePlayerState.Playing, PlayerInvite.NoTeam, 0, false, false, false));
-            Players.Add(OpponentPlayerID, new GamePlayer(OpponentPlayerID, GamePlayerState.Playing, PlayerInvite.NoTeam, 0, false, false, false));
-
-
-            var incomes = new Dictionary<PlayerIDType, PlayerIncome>();
-            incomes.Add(MyPlayerID, new PlayerIncome(StartingArmies));
-            incomes.Add(OpponentPlayerID, new PlayerIncome(5));
-
-            var settings = new GameSettings(0.6, 0.7, true, 5, 2, 2, 0, (DistributionIDType)0, new Dictionary<BonusIDType, int>(), false, false, false, 2, RoundingModeEnum.StraightRound, 0.16, false, false, new Dictionary<CardIDType, object>(), false, GameFogLevel.Foggy, false);
-            Bot.Init((GameIDType)0, MyPlayerID, Players, Map, DistributionStanding, settings, NumberOfTurns, incomes, PrevTurn, LatestTurnStanding, PreviousTurnStanding, new Dictionary<PlayerIDType, TeammateOrders>(), new List<CardInstance>(), 0, Stopwatch.StartNew(), new List<string>());
-        }
-
-        static IWarLightAI Bot;
 
     }
 }

@@ -1,8 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿/*
+* This code was auto-converted from a java project.
+*/
 
-namespace WarLight.Shared.AI.Wunderwaffe.Move
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Collections;
+
+namespace WarLight.AI.Wunderwaffe.Move
 {
     /// <summary>Moves is a data structure to store all calculated moves.</summary>
     public class Moves
@@ -55,7 +60,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Move
 
         private GameOrder Convert(BotOrderDeploy o)
         {
-            return GameOrderDeploy.Create(o.PlayerID, o.Armies, o.Territory.ID, false);
+            return GameOrderDeploy.Create(o.Armies, o.PlayerID, o.Territory.ID);
         }
 
         private GameOrder Convert(BotOrderAttackTransfer o)
@@ -75,24 +80,24 @@ namespace WarLight.Shared.AI.Wunderwaffe.Move
 
         public void DumpToLog()
         {
-            AILog.Log("MovesCalculator", "Final " + Orders.Count + " orders:");
+            AILog.Log("Final " + Orders.Count + " orders:");
                 
             foreach (var order in Orders)
             {
                 if (order is BotOrderDeploy)
                 {
                     var dep = (BotOrderDeploy)order;
-                    AILog.Log("MovesCalculator", " - " + dep.Armies + " on " + dep.Territory.Details.Name + " " + dep.Territory.ToString());
+                    AILog.Log(" - " + dep.Armies + " on " + dep.Territory.Details.Name + " " + dep.Territory.ToString());
                 }
                 else if (order is BotOrderAttackTransfer)
                 {
                     var attack = (BotOrderAttackTransfer)order;
 
-                    AILog.Log("MovesCalculator", " - " + attack.From.Details.Name + " -> " + attack.To.Details.Name + " " + attack.Armies + " Message=" + attack.Message + ", Source=" + attack.Source);
+                    AILog.Log(" - " + attack.From.Details.Name + " -> " + attack.To.Details.Name + " " + attack.Armies + " Message=" + attack.Message + ", Source=" + attack.Source);
                 }
                 else if (order is BotOrderGeneric)
                 {
-                    AILog.Log("MovesCalculator", " - " + order.As<BotOrderGeneric>().Order.ToString());
+                    AILog.Log(" - " + order.As<BotOrderGeneric>().Order.ToString());
                 }
                 else
                     throw new Exception("Unexpected order type");

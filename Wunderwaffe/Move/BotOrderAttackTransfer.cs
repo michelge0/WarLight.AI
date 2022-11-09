@@ -1,6 +1,13 @@
-﻿using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿/*
+* This code was auto-converted from a java project.
+*/
 
-namespace WarLight.Shared.AI.Wunderwaffe.Move
+
+
+using System;
+using WarLight.AI.Wunderwaffe.Bot;
+
+namespace WarLight.AI.Wunderwaffe.Move
 {
 
     public enum AttackMessage
@@ -32,10 +39,10 @@ namespace WarLight.Shared.AI.Wunderwaffe.Move
             this.Armies = armies;
             this.Source = source;
         }
-
+        
         public override string ToString()
         {
-            return this.From + " -[" + this.Armies + "]-> " + this.To + " " + this.To.OwnerPlayerID + " (" + this.Source + ")";
+            return this.From + " -[" + this.Armies + "]-> " + this.To + " " + this.To.OwnerPlayerID;
         }
 
         public override TurnPhase OccursInPhase

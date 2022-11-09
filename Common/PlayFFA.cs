@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public static class PlayFFA
     {
@@ -22,7 +22,7 @@ namespace WarLight.Shared.AI
         {
             var botName = args[0];
 
-            AILog.Log("PlayFFA", "Creating game...");
+            AILog.Log("Creating game...");
             var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, 6).Select(o => PlayerInvite.Create((PlayerIDType)o, PlayerInvite.NoTeam, null)), "PlayFFA", null, gameSettings =>
             //var gameID = BotGameAPI.CreateGame(Enumerable.Range(10, 6).Select(o => PlayerInvite.Create((PlayerIDType)o, (TeamIDType)(o == 0 ? 0 : 1), (SlotType)o)), "PlayFFA", 17, gameSettings =>
             {
@@ -32,7 +32,7 @@ namespace WarLight.Shared.AI
                 //gameSettings["AutomaticTerritoryDistribution"] = "Automatic";
             });
 
-            AILog.Log("PlayFFA", "Created game " + gameID);
+            AILog.Log("Created game " + gameID);
 
             var settings = BotGameAPI.GetGameSettings(gameID);
 
@@ -44,7 +44,7 @@ namespace WarLight.Shared.AI
                     var game = BotGameAPI.GetGameInfo(gameID, null);
                     if (game.State == GameState.Finished)
                     {
-                        AILog.Log("PlayFFA", "Game finished: " + gameID);
+                        AILog.Log("Game finished: " + gameID);
                         break;
                     }
 

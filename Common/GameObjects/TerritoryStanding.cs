@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     
     public class TerritoryStanding
@@ -17,14 +17,11 @@ namespace WarLight.Shared.AI
         public PlayerIDType OwnerPlayerID;
         public Armies NumArmies;
 
-        
-        public static TerritoryStanding Create(TerritoryIDType territoryID, PlayerIDType owner, Armies armies)
+        public TerritoryStanding(TerritoryIDType terrID, PlayerIDType playerID, Armies armies)
         {
-            TerritoryStanding cs = new TerritoryStanding();
-            cs.ID = territoryID;
-            cs.OwnerPlayerID = owner;
-            cs.NumArmies = armies;
-            return cs;
+            this.ID = terrID;
+            this.OwnerPlayerID = playerID;
+            this.NumArmies = armies;
         }
 
         public bool IsNeutral
@@ -39,12 +36,9 @@ namespace WarLight.Shared.AI
 
         public TerritoryStanding Clone()
         {
-            return TerritoryStanding.Create(this.ID, this.OwnerPlayerID, this.NumArmies);
+            return new TerritoryStanding(this.ID, this.OwnerPlayerID, this.NumArmies);
         }
 
-        internal int NumStructures(StructureType city)
-        {
-            return 0; //not implemented
-        }
+
     }
 }

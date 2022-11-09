@@ -1,9 +1,14 @@
-﻿using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿/*
+* This code was auto-converted from a java project.
+*/
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Evaluation;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+using WarLight.AI.Wunderwaffe.Move;
+
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <remarks>
     /// BreakTerritoriesTask is responsible for breaking a stuff like an opponent Bonus. Therefore the goal is not to break

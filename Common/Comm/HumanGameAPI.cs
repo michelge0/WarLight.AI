@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public static class HumanGameAPI
     {
@@ -16,7 +16,7 @@ namespace WarLight.Shared.AI
             Assert.Fatal(response["success"] != null);
         }
 
-        public static GameIDType CreateGame(IEnumerable<PlayerInvite> players, string gameName, int? templateID, Action<JObject> writeSettingsOpt = null)
+        public static GameIDType CreateGame(IEnumerable<PlayerInvite> players, string gameName, Action<JObject> writeSettingsOpt = null)
         {
             var playersNode = new JArray();
             foreach (var player in players)
@@ -41,10 +41,6 @@ namespace WarLight.Shared.AI
             json["gameName"] = gameName;
             json["players"] = playersNode;
             json["settings"] = settings;
-
-            if (templateID.HasValue)
-                json["templateID"] = templateID.Value;
-
 
             return (GameIDType)(int)Communication.Call("CreateGame", json)["gameID"];
         }

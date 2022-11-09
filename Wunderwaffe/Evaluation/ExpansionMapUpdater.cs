@@ -1,7 +1,14 @@
-﻿using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿ /*
+ * This code was auto-converted from a java project.
+ */
 
-namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
+using System;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+
+
+
+namespace WarLight.AI.Wunderwaffe.Evaluation
 {
     /// <summary>This class is responsible for updating the ExpansionMap.</summary>
     /// <remarks>
@@ -32,7 +39,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                 if (vmNeutralTerritory.IsVisible)
                 {
                     var attackingArmies = vmNeutralTerritory.GetIncomingArmies();
-                    if (vmNeutralTerritory.getOwnKills(attackingArmies.AttackPower, vmNeutralTerritory.Armies.DefensePower) >= vmNeutralTerritory.Armies.DefensePower)
+                    if (Math.Round(attackingArmies.AttackPower * BotState.Settings.OffensiveKillRate) >= vmNeutralTerritory.Armies.DefensePower)
                         vmNeutralTerritoriesThatWeTake.Add(vmNeutralTerritory);
                 }
             }
@@ -41,7 +48,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
             {
                 var emTakenTerritory = expansionMap.Territories[vmTakenTerritory.ID];
                 emTakenTerritory.OwnerPlayerID = BotState.Me.ID;
-                emTakenTerritory.Armies = vmTakenTerritory.GetIncomingArmies().Subtract(new Armies(SharedUtility.Round(vmTakenTerritory.Armies.DefensePower * BotState.Settings.DefenseKillRate)));
+                emTakenTerritory.Armies = vmTakenTerritory.GetIncomingArmies().Subtract(new Armies(SharedUtility.Round(vmTakenTerritory.Armies.DefensePower * BotState.Settings.DefensiveKillRate)));
             }
         }
     }

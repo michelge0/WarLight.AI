@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public static class BotGameAPI
     {
@@ -110,14 +110,12 @@ namespace WarLight.Shared.AI
             Communication.Call("DeleteBotGame", gidNode);
         }
 
-        public static Tuple<GameSettings, MapDetails, GameObject> GetBotExportedGame(GameIDType gameID, string exportedGame, PlayerIDType playerID, int? turnNumber)
+        public static Tuple<GameSettings, MapDetails, GameObject> GetBotExportedGame(GameIDType gameID, string exportedGame, PlayerIDType playerID, int turnNumber)
         {
             var input = new JObject();
             input["exportedGame"] = exportedGame;
             input["playerID"] = (int)playerID;
-
-            if (turnNumber.HasValue)
-                input["turnNumber"] = turnNumber;
+            input["turnNumber"] = turnNumber;
 
             var response = Communication.Call("GetBotExportedGameInfo", input);
 

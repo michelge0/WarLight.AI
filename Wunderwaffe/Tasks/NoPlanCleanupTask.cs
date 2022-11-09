@@ -1,9 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Move;
+﻿/*
+* This code was auto-converted from a java project.
+*/
 
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Evaluation;
+
+using WarLight.AI.Wunderwaffe.Move;
+
+
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>NoPlanCleanupTask is responsible for calculating the remaining moves after the other tasks have been fulfilled.
     /// </summary>
@@ -36,6 +44,9 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 }
                 if (possibleToTerritories.Count > 0)
                 {
+                    //var sortedPossibleToTerritories = state.TerritoryValueCalculator.SortExpansionValue(possibleToTerritories);
+                    //var territoryToAttack = sortedPossibleToTerritories[0];
+
                     var territoryToAttack = possibleToTerritories.OrderByDescending(t => t.Bonuses.Sum(b => b.GetExpansionValue()) * 100 + t.ExpansionTerritoryValue).First();
 
                     outvar.AddOrder(new BotOrderAttackTransfer(state.Me.ID, fromTerritory, territoryToAttack, fromTerritory.GetIdleArmies(), "NoPlanCleanupTask"));
@@ -56,11 +67,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
         private static bool IsUnplannedExpansionStepSmart(BotMain state, BotTerritory fromTerritory, BotTerritory toTerritory)
         {
             var isSmart = true;
-
+            //if (fromTerritory.GetExpansionMoves().Count > 0)
+            //{
+            //}
             if (fromTerritory.GetIdleArmies().AttackPower <= 1)
                 isSmart = false;
-
-            if (toTerritory.Armies.DefensePower > toTerritory.getOwnKills(fromTerritory.GetIdleArmies().AttackPower,toTerritory.Armies.DefensePower))
+            if (toTerritory.Armies.DefensePower > Math.Round(fromTerritory.GetIdleArmies().AttackPower * state.Settings.OffensiveKillRate))
                 isSmart = false;
             var distanceCondition1 = fromTerritory.DistanceToOpponentBorder <= 4;
             var distanceCondition2 = toTerritory.GetOpponentNeighbors().Count == 0;
@@ -90,6 +102,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             }
             // If we aren't expanding at all then a random territory is good (strange
             // case)
+            // http://theaigames.com/competitions/warlight-ai-challenge-2/games/54d13c854b5ab20571901021
             if (expansionMoves.Count == 0)
                 return state.VisibleMap.GetOwnedTerritories()[0];
             // If we are expanding then look for the attack to the highest

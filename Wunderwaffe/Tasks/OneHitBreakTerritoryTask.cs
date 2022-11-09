@@ -1,9 +1,15 @@
-﻿using System;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿ /*
+ * This code was auto-converted from a java project.
+ */
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using System;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Evaluation;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+using WarLight.AI.Wunderwaffe.Move;
+
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>
     /// OneHitBreakTerritoryTask is responsible for calculating an attack plan to break a single territory with a single attack
@@ -15,7 +21,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
         {
             var outvar = new Moves();
             var opponentArmies = opponentTerritory.GetArmiesAfterDeploymentAndIncomingAttacks(conservativeLevel);
-            var neededAttackArmies = opponentTerritory.getNeededBreakArmies(opponentArmies.DefensePower);
+            var neededAttackArmies = SharedUtility.Ceiling(opponentArmies.DefensePower / state.Settings.OffensiveKillRate);
             var ownedNeighbors = opponentTerritory.GetOwnedNeighbors();
             var presortedOwnedNeighbors = state.TerritoryValueCalculator.SortDefenseValue(ownedNeighbors);
             var sortedOwnedNeighbors = BotMap.GetOrderedListOfTerritoriesByIdleArmies(presortedOwnedNeighbors);
@@ -23,19 +29,12 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
             var idleArmies = territoryToUse.GetIdleArmies();
             var neededDeployment = Math.Max(0, neededAttackArmies - idleArmies.AttackPower);
             if (neededDeployment > maxDeployment)
-            {
                 return null;
-            }
 
             if (neededDeployment > 0)
-            {
                 outvar.AddOrder(new BotOrderDeploy(state.Me.ID, territoryToUse, neededDeployment));
-            }
 
-            Armies attackArmies = new Armies(neededAttackArmies);
-
-            //var atm = new BotOrderAttackTransfer(state.Me.ID, territoryToUse, opponentTerritory, idleArmies.Add(new Armies(neededDeployment)), "OneHitBreakTerritoryTask");
-            var atm = new BotOrderAttackTransfer(state.Me.ID, territoryToUse, opponentTerritory, attackArmies, "OneHitBreakTerritoryTask");
+            var atm = new BotOrderAttackTransfer(state.Me.ID, territoryToUse, opponentTerritory, idleArmies.Add(new Armies(neededDeployment)), "OneHitBreakTerritoryTask");
             outvar.AddOrder(atm);
             return outvar;
         }

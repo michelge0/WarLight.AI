@@ -1,6 +1,7 @@
 ﻿
+using WarLight.AI.Wunderwaffe.Bot;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     /// <summary>This Move is used in the first part of each round.</summary>
     /// <remarks>
@@ -17,7 +18,7 @@ namespace WarLight.Shared.AI
             get { return TurnPhase.Deploys; }
         }
 
-        public static GameOrderDeploy Create(PlayerIDType playerID, int numArmies, TerritoryIDType deployOn, bool free)
+        public static GameOrderDeploy Create(int numArmies, PlayerIDType playerID, TerritoryIDType deployOn)
         {
             var o = new GameOrderDeploy();
             o.NumArmies = numArmies;
@@ -26,9 +27,5 @@ namespace WarLight.Shared.AI
             return o;
         }
 
-        public override string ToString()
-        {
-            return "Player " + PlayerID + " deploys " + NumArmies + " armies on " + DeployOn;
-        }
     }
 }

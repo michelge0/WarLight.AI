@@ -1,9 +1,8 @@
-﻿namespace WarLight.Shared.AI
+﻿namespace WarLight.AI
 {
     public enum TurnPhase
     {
-        Purchase = 0,
-        CardsWearOff = 5,
+        CardsWearOff = 0,
         Discards = 10,
         ReinforcementAndSpyCards = 20,
         Deploys = 25,

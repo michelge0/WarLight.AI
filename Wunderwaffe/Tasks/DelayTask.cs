@@ -1,10 +1,15 @@
-﻿using System;
+﻿/*
+* This code was auto-converted from a java project.
+*/
+
+using System;
 using System.Linq;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using WarLight.AI.Wunderwaffe.Move;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <remarks>
     /// MoveIdleArmiesTask is responsible for helping us getting last order. This happens by moving around armies in a semi reasonable way or by small attacks with 1.
@@ -38,7 +43,11 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                     maximumNewDelays--;
                 }
             }
-
+            // TODO verschoben
+            // Only add step 2 delays when really needed
+            // if (!isRiskyAttackPresent(movesSoFar)) {
+            // return out;
+            // }
             // Step 2: If the minMovesBeforeRiskyAttack constraint isn't fulfilled
             // then also add delay moves next to the opponent
             var stillNeededDelays = Math.Max(0, minMovesBeforeRiskyAttack - (amountOfSafeMoves
@@ -69,7 +78,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 {
                     var attackingArmies = atm.Armies;
                     var maxOpponentArmies = atm.To.Armies.Add(new Armies(state.GetGuessedOpponentIncome(atm.To.OwnerPlayerID, state.VisibleMap)));
-                    if (attackingArmies.AttackPower > 1 && attackingArmies.AttackPower * state.Settings.OffenseKillRate <= maxOpponentArmies.DefensePower * state.Settings.DefenseKillRate)
+                    if (attackingArmies.AttackPower > 1 && attackingArmies.AttackPower * state.Settings.OffensiveKillRate <= maxOpponentArmies.DefensePower * state.Settings.DefensiveKillRate)
                         return true;
                 }
             }
@@ -87,7 +96,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Tasks
                 {
                     var maxOpponentArmies = atm.To.Armies.Add(new Armies(state.GetGuessedOpponentIncome(atm.To.OwnerPlayerID, state.VisibleMap)));
                     var attackingArmies = atm.Armies;
-                    if (attackingArmies.AttackPower * state.Settings.OffenseKillRate > maxOpponentArmies.DefensePower * state.Settings.DefenseKillRate)
+                    if (attackingArmies.AttackPower * state.Settings.OffensiveKillRate > maxOpponentArmies.DefensePower * state.Settings.DefensiveKillRate)
                         outvar++;
                 }
             }

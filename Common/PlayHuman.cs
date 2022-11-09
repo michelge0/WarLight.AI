@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public static class PlayHuman
     {
@@ -14,12 +14,12 @@ namespace WarLight.Shared.AI
 
         public static void Create(string botName, string opponent, string gameName)
         {
-            AILog.Log("PlayHuman", "Creating game...");
+            AILog.Log("Creating game...");
             var gameID = HumanGameAPI.CreateGame(new[] {
                             PlayerInvite.Create("me", (TeamIDType)0, null),
                             PlayerInvite.Create("AI@warlight.net", (TeamIDType)0, null),
                             PlayerInvite.Create(opponent, (TeamIDType)1, null)
-                        }, gameName, null, settings =>
+                        }, gameName, settings =>
                         {
                             settings["Fog"] = "NoFog"; //turn off fog so we can see what the AI is doing
                             settings["MaxCardsHold"] = 999; //so AI doesn't have to discard
@@ -28,7 +28,7 @@ namespace WarLight.Shared.AI
                             //settings["BlockadeCard"] = "none";
                             //settings["NumberOfCardsToReceiveEachTurn"] = 1;
                         });
-            AILog.Log("PlayHuman", "Created game " + gameID);
+            AILog.Log("Created game " + gameID);
             PlayLoop(botName, gameID, MeID);
         }
 
@@ -51,9 +51,9 @@ namespace WarLight.Shared.AI
                         var game = HumanGameAPI.GetGameInfo(gameID, null);
                         if (game.Players[playerID].State == GamePlayerState.Invited)
                         {
-                            AILog.Log("PlayHuman", "Accepting invite...");
+                            AILog.Log("Accepting invite...");
                             HumanGameAPI.AcceptGame(gameID);
-                            AILog.Log("PlayHuman", "Accepted invite");
+                            AILog.Log("Accepted invite");
                         }
 
                         checkedAccept = true;
@@ -61,7 +61,7 @@ namespace WarLight.Shared.AI
                 }
                 else if (status.Item2 == GameState.Finished)
                 {
-                    AILog.Log("PlayHuman", "Game finished");
+                    AILog.Log("Game finished");
                     break;
                 }
                 else if (status.Item1 > turnNumber)
@@ -71,14 +71,14 @@ namespace WarLight.Shared.AI
                     if (!EntryPoint.PlayGame(botName, game, MeID, settings.Item1, settings.Item2, picks =>
                     {
                         HumanGameAPI.SendPicks(game.ID, picks);
-                        AILog.Log("PlayHuman", "Sent picks");
+                        AILog.Log("Sent picks");
                     }, orders =>
                     {
                         HumanGameAPI.SendOrders(game.ID, orders, game.NumberOfTurns + 1);
-                        AILog.Log("PlayHuman", "Sent orders");
+                        AILog.Log("Sent orders");
                     }))
                     {
-                        AILog.Log("PlayHuman", "We're no longer alive");
+                        AILog.Log("We're no longer alive");
                         break;
                     }
                     turnNumber = status.Item1;
@@ -92,7 +92,7 @@ namespace WarLight.Shared.AI
 
         public static void PlayForTurn(string botName, GameIDType gameID, int playForTurn)
         {
-            AILog.Log("PlayHuman", "Generating orders for game " + gameID + " turn " + playForTurn);
+            AILog.Log("Generating orders for game " + gameID + " turn " + playForTurn);
             var settings = HumanGameAPI.GetGameSettings(gameID);
             var game = HumanGameAPI.GetGameInfo(gameID, playForTurn);
 

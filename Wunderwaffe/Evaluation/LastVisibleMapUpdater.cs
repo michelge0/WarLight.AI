@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Move;
+﻿ /*
+ * This code was auto-converted from a java project.
+ */
 
-namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
+using WarLight.AI.Wunderwaffe.Bot;
+
+using WarLight.AI.Wunderwaffe.Move;
+
+namespace WarLight.AI.Wunderwaffe.Evaluation
 {
     public class LastVisibleMapUpdater
     {
@@ -12,20 +15,15 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
         {
             this.BotState = state;
         }
+        
         public void StoreOpponentDeployment()
         {
-            var lastVisibleMap = BotState.LastVisibleMapX;
-            foreach (GamePlayer opponent in BotState.Opponents)
+            var lastVisibleMap = BotState.LastVisibleMap;
+            foreach (var opponentTerritory in lastVisibleMap.AllOpponentTerritories)
             {
-                List<GameOrderDeploy> opponentDeployments = BotState.PrevTurn.Where(o => o.PlayerID == opponent.ID).OfType<GameOrderDeploy>().ToList();
-                foreach (GameOrderDeploy opponentDeployment in opponentDeployments)
-                {
-                    BotTerritory lwmTerritory = lastVisibleMap.Territories[opponentDeployment.DeployOn];
-                    if (lwmTerritory.IsVisible)
-                    {
-                        MovesCommitter.CommittPlaceArmiesMove(new BotOrderDeploy(lwmTerritory.OwnerPlayerID, lwmTerritory, opponentDeployment.NumArmies));
-                    }
-                }
+                var armiesDeployed = BotState.HistoryTracker.GetOpponentDeployment(opponentTerritory.OwnerPlayerID);
+                if (armiesDeployed > 0)
+                    MovesCommitter.CommittPlaceArmiesMove(new BotOrderDeploy(opponentTerritory.OwnerPlayerID, opponentTerritory, armiesDeployed));
             }
         }
     }

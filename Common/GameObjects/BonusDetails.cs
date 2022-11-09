@@ -7,7 +7,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 
-namespace WarLight.Shared.AI
+namespace WarLight.AI
 {
     public class BonusDetails
     {
@@ -29,9 +29,8 @@ namespace WarLight.Shared.AI
         
         public override string ToString()
         {
-            return Name + " ID = " + this.ID + ", ArmiesReward = " + this.Amount;
+            return "ID = " + this.ID + ", ArmiesReward = " + this.Amount;
         }
-
 
         /// <summary>
         /// Determines who controls this bonus. Will return null if nobody does or at least one territory is fogged
@@ -45,15 +44,15 @@ namespace WarLight.Shared.AI
             {
                 TerritoryStanding cs = standing.Territories[territoryID];
                 if (cs.OwnerPlayerID == TerritoryStanding.AvailableForDistribution)
-                    return null;
+                    return new Nullable<PlayerIDType>();
                 if (cs.IsNeutral)
-                    return null;
+                    return new Nullable<PlayerIDType>();
                 else if (cs.OwnerPlayerID == TerritoryStanding.FogPlayerID)
-                    return null;
+                    return new Nullable<PlayerIDType>();
                 else if ((int)playerID == int.MinValue)
                     playerID = cs.OwnerPlayerID;
                 else if (playerID != cs.OwnerPlayerID)
-                    return null;
+                    return new Nullable<PlayerIDType>();
             }
 
             Assert.Fatal(playerID != TerritoryStanding.FogPlayerID && playerID != TerritoryStanding.NeutralPlayerID);

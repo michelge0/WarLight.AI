@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
-using WarLight.Shared.AI.Wunderwaffe.Evaluation;
+﻿/*
+* This code was auto-converted from a java project.
+*/
 
-using WarLight.Shared.AI.Wunderwaffe.Move;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+using WarLight.AI.Wunderwaffe.Evaluation;
 
-namespace WarLight.Shared.AI.Wunderwaffe.Tasks
+using WarLight.AI.Wunderwaffe.Move;
+
+
+namespace WarLight.AI.Wunderwaffe.Tasks
 {
     /// <summary>
     /// NoPlanTryoutAttackTask is responsible for attacking stacks of 1 with 2 armies and stacks of 2 with 3 armies since we

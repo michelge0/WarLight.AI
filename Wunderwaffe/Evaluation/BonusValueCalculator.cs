@@ -1,9 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using WarLight.Shared.AI.Wunderwaffe.Bot;
+﻿ /*
+ * This code was auto-converted from a java project.
+ */
 
-namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using WarLight.AI.Wunderwaffe.Bot;
+
+
+
+namespace WarLight.AI.Wunderwaffe.Evaluation
 {
     public enum BonusPlan
     {
@@ -58,7 +64,7 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
                 if (GetAdjustedFactor(bonus) > 0)
                     copy.Add(bonus);
             }
-            while (copy.Count != 0)
+            while (!copy.IsEmpty())
             {
                 var bestBonus = copy[0];
                 foreach (BotBonus bonus_1 in copy)
@@ -80,9 +86,13 @@ namespace WarLight.Shared.AI.Wunderwaffe.Evaluation
 
         private const int BonusAttackFactor = 15;
         private const int BonusDefenseFactor = 10;
-        private const int BonusTakeOverFactor = 4;
+        private const int BonusTakeOverFactor = 6;
         private const int BonusPreventTakeOverFactor = 15;
 
+        // private final int Bonus_ATTACK_FACTOR = 5;
+        // private final int SUPERREGIOIN_DEFENSE_FACTOR = 3;
+        // private final int Bonus_TAKE_OVER_FACTOR = 3;
+        // private final int Bonus_PREVENT_TAKE_OVER_FACTOR = 5;
         public void CalculateBonusValues(BotMap mapToUse, BotMap mapToWriteIn)
         {
             var ownBonusesUnderAttack = new List<BotBonus>();
